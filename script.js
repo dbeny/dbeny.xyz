@@ -28,7 +28,10 @@ function getRemainingTime() {
 function initialize() {
     const interval = setInterval(() => {
         const remainingTimeMs = getRemainingTime()
-        console.log(remainingTimeMs)
+        if (remainingTimeMs == 0) {
+            console.log("jovan amugy is a fidesz nyer, koltozok csa")
+            clearInterval()
+        }
     }, 1000)
 }
 
