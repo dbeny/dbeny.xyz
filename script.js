@@ -28,6 +28,7 @@ function getRemainingTime() {
 function initialize() {
     const interval = setInterval(() => {
         const remainingTimeMs = getRemainingTime()
+        console.log(remainingTimeMs)
     }, 1000)
 }
 
