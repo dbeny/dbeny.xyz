@@ -18,11 +18,11 @@ function getRemainingTime() {
     const d = document.getElementById("d")
     d.innerText = updateNum(days)
     const h = document.getElementById("h")
-    d.innerText = updateNum(hours)
+    h.innerText = updateNum(hours)
     const m = document.getElementById("m")
-    d.innerText = updateNum(minutes)
+    m.innerText = updateNum(minutes)
     const s = document.getElementById("s")
-    d.innerText = updateNum(seconds)
+    s.innerText = updateNum(seconds)
 }
 
 function initialize() {
