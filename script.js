@@ -4,8 +4,7 @@ function updateNum(num) {
 
 function getRemainingTime() {
     const nextYear = new Date().getFullYear()+1
-    const nextDate = new Date(`Jun 9, ${nextYear} 00:00:00`)
-    const timeContainer = document.getElementById("time")
+    const nextDate = new Date(`Jan 1, ${nextYear} 00:00:00`)
 
     const currentTime = new Date()
     const remainingTime = nextDate.getTime()-currentTime.getTime()
@@ -26,7 +25,7 @@ function getRemainingTime() {
 }
 
 function initialize() {
-    const interval = setInterval(() => {
+    setInterval(() => {
         const remainingTimeMs = getRemainingTime()
         if (remainingTimeMs == 0) {
             console.log("jovan amugy is a fidesz nyer, koltozok csa")
