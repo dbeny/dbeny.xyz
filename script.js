@@ -3,6 +3,7 @@ function updateNum(num) {
 }
 
 function getRemainingTime() {
+    //realtime to new year
     const nextYear = new Date().getFullYear()+1
     const nextDate = new Date(`Jan 1, ${nextYear} 00:00:00`)
 
@@ -22,6 +23,18 @@ function getRemainingTime() {
     m.innerText = updateNum(minutes)
     const s = document.getElementById("s")
     s.innerText = updateNum(seconds)
+
+    //created-at
+    const createdAt = new Date("Dec 15, 2023 09:29:00") 
+    const createdAtDiff = currentTime.getTime()-createdAt.getTime()
+
+    let dYears = Math.floor(createdAtDiff/(1000*60*60*24*365))
+    const dDays = Math.floor(createdAtDiff/(1000*60*60*24))
+
+    let diffStr = `${(dYears > 0 ? dYears+" éve és " : "")}${dDays} napja`
+
+    const createdat = document.getElementById("created-at")
+    createdat.innerText = diffStr
 }
 
 function initialize() {
