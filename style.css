@@ -7,3 +7,16 @@ html, body {
     display: flex;
     flex-direction: row;
 }
+
+li {
+    width: 50%;
+    padding: 5px;
+}
+li:nth-child(2n-1) {
+    background-color: rgba(50, 84, 84, 0.2);
+    color: black;
+}
+li:nth-child(2n) {
+    background-color: rgba(128, 125, 125, 0.1);
+    color: black;
+}
