@@ -31,10 +31,21 @@ function getRemainingTime() {
     let dYears = Math.floor(createdAtDiff/(1000*60*60*24*365))
     const dDays = Math.floor(createdAtDiff/(1000*60*60*24))
 
-    let diffStr = `${(dYears > 0 ? dYears+" éve és " : "")}${dDays} napja`
+    let diffStr = `${(dYears > 0 ? dYears+" éve és " : "")}${dDays-(dYears*365)} napja`
 
     const createdat = document.getElementById("created-at")
     createdat.innerText = diffStr
+
+    //edited-at
+    const editedAt = new Date("Apr 22, 2025 10:21:00")
+    const editedAtDiff = currentTime.getTime()-editedAt.getTime()
+    let eDYears = Math.floor(editedAtDiff/(1000*60*60*24*365))
+    const eDDays = Math.floor(editedAtDiff/(1000*60*60*24))
+
+    let eDiffStr = `${(eDYears > 0 ? eDYears+" éve és " : "")}${eDDays-(eDYears*365)} napja`
+
+    const editedat = document.getElementById("edited-at")
+    editedat.innerText = eDiffStr
 }
 
 function initialize() {
