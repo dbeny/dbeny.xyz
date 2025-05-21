@@ -23,6 +23,9 @@ html {
 body {
     font-family: 'Lexend', sans-serif;
     background-color: var(--main-dark);
+    position: relative;
+    padding: 0;
+    margin: 0;
 }
 
 li {
@@ -48,6 +51,15 @@ ul {
 
 .ctx {
     margin-top: 2em;
+}
+
+.dts, .main-container {
+    padding: 2em;
+}
+
+.dts {
+    user-select: none;
+    -moz-user-select: none;
 }
 
 h1 {
@@ -123,4 +135,52 @@ h1 {
 .main-container {
     display: flex;
     justify-content: space-between;
+}
+
+.replied {
+    padding: .2em .15em;
+    line-height: 2em;
+    margin: 0 .25em;
+    background-color: #595959;
+    border: 1px solid #232323;
+    border-radius: .5em;
+}
+
+@media screen and (max-width: 1227px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .main-container > .side {
+        margin-top: 2em;
+    }
+}
+
+li > img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--small-br);
+}
+
+.reply > div {
+    opacity: .6;
+    font-style: italic;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: max-content;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+.footer > * {
+    padding: .5em 1em;
+    margin: .5em;
+    background-color: var(--dark);
+    border: 1px solid var(--warn);
+    border-radius: var(--med-br);    
 }
