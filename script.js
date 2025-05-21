@@ -1,63 +1,209 @@
 function updateNum(num) {
-    return (num<10 ? "0" + num : num)
+	return String(num<10 ? "0" + num : num)
+}
+
+function findNextSymmetricTimestamp() {
+	const now = new Date();
+
+	for (let year = now.getFullYear(); year <= now.getFullYear() + 100; year++) {
+		for (let month = 1; month <= 12; month++) {
+			const maxDay = new Date(year, month, 0).getDate();
+			
+			// Try each valid symmetric value for day/hour/minute/second
+			for (let value = 0; value <= 23; value++) {
+				if (value === 0 || value > maxDay || value > 12) continue; // value must be a valid month and day
+
+				const candidate = new Date(year, value - 1, value, value, value, value);
+				if (candidate > now) {
+					const options = { month: 'short' };
+					const monthName = candidate.toLocaleString('en-US', options);
+					const day = String(candidate.getDate()).padStart(2, '0');
+					const hh = String(candidate.getHours()).padStart(2, '0');
+					const mm = String(candidate.getMinutes()).padStart(2, '0');
+					const ss = String(candidate.getSeconds()).padStart(2, '0');
+
+					return `${monthName} ${day}, ${year} ${hh}:${mm}:${ss}`;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function getTimeUntilLongTime(currentDate, targetDate) {
+	let dateObj = new Date(targetDate)
+	let remainingTime = dateObj.getTime()-currentDate.getTime()
+
+	const days = Math.floor(remainingTime/(1000*60*60*24))
+	const hours = Math.floor((remainingTime%(1000*60*60*24))/(1000*60*60))
+	const minutes = Math.floor((remainingTime%(1000*60*60))/(1000*60))
+	const seconds = Math.floor((remainingTime%(1000*60))/1000)
+
+	console.log(`RETURNED:${JSON.stringify([updateNum(days), updateNum(hours), updateNum(minutes), updateNum(seconds)])}`)
+	return [updateNum(days), updateNum(hours), updateNum(minutes), updateNum(seconds)]
+}
+
+function getTimeUntilWords(currentDate, targetDate) {
+	let target = new Date(targetDate)
+	let diff = currentDate.getTime()-target.getTime()
+
+	let dYears = Math.floor(diff/(1000*60*60*24*365))
+	let dDays = Math.floor(diff/(1000*60*60*24))
+	return `${(dYears > 0 ? dYears+" éve és " : "")}${dDays-(dYears*365)} napja`
 }
 
 function getRemainingTime() {
-    //realtime to new year
-    const nextYear = new Date().getFullYear()+1
-    const nextDate = new Date(`Jan 1, ${nextYear} 00:00:00`)
+	//realtime to new year
+	const nextYear = new Date().getFullYear()+1
+	let currentTime = new Date()
 
-    const currentTime = new Date()
-    const remainingTime = nextDate.getTime()-currentTime.getTime()
+	let dhms = getTimeUntilLongTime(currentTime, `Jan 1, ${nextYear} 00:00:00`)
+	let list = ["d", "h", "m", "s"]
+	for (let i = 0; i < 4; i++) {
+		setInnerTextForId(list[i], dhms[i])
+	}
 
-    const days = Math.floor(remainingTime/(1000*60*60*24))
-    const hours = Math.floor((remainingTime%(1000*60*60*24))/(1000*60*60))
-    const minutes = Math.floor((remainingTime%(1000*60*60))/(1000*60))
-    const seconds = Math.floor((remainingTime%(1000*60))/1000)
-    
-    const d = document.getElementById("d")
-    d.innerText = updateNum(days)
-    const h = document.getElementById("h")
-    h.innerText = updateNum(hours)
-    const m = document.getElementById("m")
-    m.innerText = updateNum(minutes)
-    const s = document.getElementById("s")
-    s.innerText = updateNum(seconds)
+	let dhmsv = getTimeUntilLongTime(currentTime, `Apr 12, 2026 12:00:00`);
+	for (let i = 0; i < 4; i++) {
+		setInnerTextForId(`${list[i]}${list[i]}`, dhmsv[i])
+	}
 
-    //created-at
-    const createdAt = new Date("Dec 15, 2023 09:29:00") 
-    const createdAtDiff = currentTime.getTime()-createdAt.getTime()
+	setInnerTextForId("created-at", getTimeUntilWords(currentTime, "Dec 15, 2023 09:29:00"))
+	setInnerTextForId("edited-at", getTimeUntilWords(currentTime, "May 21, 2025 8:40:00"))
+	
+	let symmetric = findNextSymmetricTimestamp()
+	let dhms2 = getTimeUntilLongTime(currentTime, symmetric)
+	for (let i = 0; i < 4; i++) {
+		setInnerTextForId(`${list[i]}${list[i]}${list[i]}`, dhms2[i])
+	}
+	setInnerTextForId("symmetric", `(${symmetric})`)
 
-    let dYears = Math.floor(createdAtDiff/(1000*60*60*24*365))
-    const dDays = Math.floor(createdAtDiff/(1000*60*60*24))
+	setInnerTextForId("mestermc", getTimeUntilWords(currentTime, "Oct 16, 2014, 17:39:46"))
+	setInnerTextForId("unix", getTimeUntilWords(currentTime, "Jan 1, 1970 00:00:00"))
+	setInnerTextForId("metallica", getTimeUntilWords(currentTime, "Oct 28, 1981 12:00:00"))
+	setInnerTextForId("kardos", getTimeUntilWords(currentTime, "Mar 20, 2007 12:00:00"))
+}
 
-    let diffStr = `${(dYears > 0 ? dYears+" éve és " : "")}${dDays-(dYears*365)} napja`
-
-    const createdat = document.getElementById("created-at")
-    createdat.innerText = diffStr
-
-    //edited-at
-    const editedAt = new Date("Apr 22, 2025 10:21:00")
-    const editedAtDiff = currentTime.getTime()-editedAt.getTime()
-    let eDYears = Math.floor(editedAtDiff/(1000*60*60*24*365))
-    const eDDays = Math.floor(editedAtDiff/(1000*60*60*24))
-
-    let eDiffStr = `${(eDYears > 0 ? eDYears+" éve és " : "")}${eDDays-(eDYears*365)} napja`
-
-    const editedat = document.getElementById("edited-at")
-    editedat.innerText = eDiffStr
+function setInnerTextForId(id, text) {
+	document.getElementById(id).innerText = text
 }
 
 function initialize() {
-    setInterval(() => {
-        const remainingTimeMs = getRemainingTime()
-        if (remainingTimeMs == 0) {
-            console.log("jovan amugy is a fidesz nyer, koltozok csa")
-            clearInterval()
-        }
-    }, 1000)
+	setInterval(() => {
+		const remainingTimeMs = getRemainingTime()
+		if (remainingTimeMs == 0) {
+			console.log("jovan amugy is a fidesz nyer, koltozok csa")
+			clearInterval()
+		}
+	}, 1000)
 }
 
-addEventListener("DOMContentLoaded", (event) => {
-    initialize()
+const emotes = {
+    catWow: "./catWow.webp",
+    ANGERY: "./ANGERY.webp",
+    HOMÁR: "./REDLOBSTER.webp",
+    BandiOfUndying: "./BandiOfUndying.webp"
+    // add more as you like:
+    // FOX: 'https://.../fox.png'
+  };
+
+  // 2. Build a regex that'll match any of your keys between colons.
+  //    Escaping and joining the keys into a single alternation.
+  const emoteNames = Object.keys(emotes).map( name => name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') );
+  const emoteRegex = new RegExp(`:(${emoteNames.join('|')}):`, 'g');
+
+  // 3. Walk all text nodes and replace
+  function replaceEmotesInTextNode(textNode) {
+    const text = textNode.nodeValue;
+    let match;
+    let lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+
+    while ((match = emoteRegex.exec(text)) !== null) {
+      const [fullMatch, name] = match;
+      const idx = match.index;
+
+      // append text before the match
+      if (idx > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, idx)));
+      }
+
+      // create the <img> for this emote
+      const img = document.createElement('img');
+      img.src = emotes[name];
+      img.alt = fullMatch;
+      img.className = 'emote';
+      fragment.appendChild(img);
+
+      lastIndex = idx + fullMatch.length;
+    }
+
+    // append any trailing text
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    // only replace if we found at least one match
+    if (fragment.childNodes.length) {
+      textNode.parentNode.replaceChild(fragment, textNode);
+    }
+  }
+
+  function walkAndReplace(root) {
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          // skip empty text and nodes inside <script> or <style>
+          if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          const parentTag = node.parentNode && node.parentNode.nodeName;
+          if (parentTag === 'SCRIPT' || parentTag === 'STYLE') return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+
+    const toProcess = [];
+    let node;
+    while (node = walker.nextNode()) {
+      if (emoteRegex.test(node.nodeValue)) {
+        toProcess.push(node);
+      }
+    }
+    toProcess.forEach(replaceEmotesInTextNode);
+  }
+
+addEventListener("DOMContentLoaded", (event) => {    
+	initialize()
+	const items = document.querySelectorAll('li');
+
+	const observer = new IntersectionObserver((entries) => {
+	  entries.forEach(entry => {
+		if (entry.isIntersecting) {
+		  entry.target.classList.add('visible');
+		  observer.unobserve(entry.target);
+		}
+	  });
+	}, {
+	  threshold: 0.1
+	});
+
+	items.forEach(li => {
+	  observer.observe(li);
+	});
+
+    walkAndReplace(document.body);
+
+      // 5. (Optional) If your page loads content dynamically, observe and replace as it comes in
+      const mo = new MutationObserver(mutations => {
+        for (const m of mutations) {
+          m.addedNodes.forEach(n => {
+            if (n.nodeType === Node.ELEMENT_NODE) {
+              walkAndReplace(n);
+            }
+          });
+        }
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
 })
