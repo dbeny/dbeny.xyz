@@ -103,16 +103,11 @@ const emotes = {
     ANGERY: "./ANGERY.webp",
     HOMÁR: "./REDLOBSTER.webp",
     BandiOfUndying: "./BandiOfUndying.webp"
-    // add more as you like:
-    // FOX: 'https://.../fox.png'
   };
 
-  // 2. Build a regex that'll match any of your keys between colons.
-  //    Escaping and joining the keys into a single alternation.
   const emoteNames = Object.keys(emotes).map( name => name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') );
   const emoteRegex = new RegExp(`:(${emoteNames.join('|')}):`, 'g');
 
-  // 3. Walk all text nodes and replace
   function replaceEmotesInTextNode(textNode) {
     const text = textNode.nodeValue;
     let match;
@@ -123,12 +118,10 @@ const emotes = {
       const [fullMatch, name] = match;
       const idx = match.index;
 
-      // append text before the match
       if (idx > lastIndex) {
         fragment.appendChild(document.createTextNode(text.slice(lastIndex, idx)));
       }
 
-      // create the <img> for this emote
       const img = document.createElement('img');
       img.src = emotes[name];
       img.alt = fullMatch;
@@ -138,12 +131,10 @@ const emotes = {
       lastIndex = idx + fullMatch.length;
     }
 
-    // append any trailing text
     if (lastIndex < text.length) {
       fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
     }
 
-    // only replace if we found at least one match
     if (fragment.childNodes.length) {
       textNode.parentNode.replaceChild(fragment, textNode);
     }
@@ -155,7 +146,6 @@ const emotes = {
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          // skip empty text and nodes inside <script> or <style>
           if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
           const parentTag = node.parentNode && node.parentNode.nodeName;
           if (parentTag === 'SCRIPT' || parentTag === 'STYLE') return NodeFilter.FILTER_REJECT;
@@ -195,7 +185,6 @@ addEventListener("DOMContentLoaded", (event) => {
 
     walkAndReplace(document.body);
 
-      // 5. (Optional) If your page loads content dynamically, observe and replace as it comes in
       const mo = new MutationObserver(mutations => {
         for (const m of mutations) {
           m.addedNodes.forEach(n => {
