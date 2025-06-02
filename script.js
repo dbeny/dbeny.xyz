@@ -69,7 +69,7 @@ function getRemainingTime() {
 	}
 
 	setInnerTextForId("created-at", getTimeUntilWords(currentTime, "Dec 15, 2023 09:29:00"))
-	setInnerTextForId("edited-at", getTimeUntilWords(currentTime, "May 21, 2025 8:40:00"))
+	setInnerTextForId("edited-at", getTimeUntilWords(currentTime, "June 2, 2025 8:40:00"))
 	
 	let symmetric = findNextSymmetricTimestamp()
 	let dhms2 = getTimeUntilLongTime(currentTime, symmetric)
