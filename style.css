@@ -328,3 +328,7 @@ li {
 .smalltxt {
     font-size: .75rem;
 }
+
+.gold {
+    color: gold;
+}
