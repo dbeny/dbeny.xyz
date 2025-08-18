@@ -26,6 +26,13 @@
                 }
             }
             checkAuth();
+
+            async function renderPosts() {
+                const res = await fetch("/posts/fetch");
+                const data = await res.json();
+                console.log(data);
+            }
+            renderPosts();
         </script>
     </body>
 </html>

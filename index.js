@@ -77,6 +77,12 @@ app.get("/auth/check", (req, res) => {
     }
 });
 
+await addDebugPosts()
+
+app.get("/posts/fetch", async (req, res) => {
+    res.json(await Mongobase.getAllPosts());
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} in ${IS_DEV ? "development" : "production"} mode`);

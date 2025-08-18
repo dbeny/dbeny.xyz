@@ -105,6 +105,10 @@ export default class Mongobase {
 		);
 	}
 
+	static async getAllPosts() {
+		return await this.models.Posts.find({});
+	}
+
 	//users
 	static async addUser({ username, discordId, email }) {
 		const user = new this.models.User({ username, discordId, email });
