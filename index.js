@@ -7,7 +7,6 @@ import path from "path";
 import MongoStore from "connect-mongo";
 import Mongobase from "./scripts/db/mongo.js";
 import { initPassportDiscord } from "./scripts/auth/passport_config.js";
-import nodemailer from "nodemailer";
 import { addDebugPosts } from "./scripts/importPosts.js";
 import { initMailer } from "./scripts/mail/mailer.js";
 

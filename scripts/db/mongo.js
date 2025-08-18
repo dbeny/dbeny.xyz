@@ -12,11 +12,7 @@ export default class Mongobase {
 		const connectionString = process.env.MONGO_CONNECTION_STRING;
 		const dbName = process.env.MONGO_DB_NAME;
 
-		await mongoose.connect(connectionString, {
-			dbName,
-			useNewUrlParser: true,
-			useUnifiedTopology: true
-		});
+		await mongoose.connect(connectionString, { dbName });
 
 		this.models.User = User;
 		this.models.Posts = Posts;

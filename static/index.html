@@ -4,35 +4,68 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Marci Hajonéz Freak-wiki</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="/style.css">
     </head>
     <body>
-        <button onclick="window.location='/auth/discord'">Register / Login</button>
-        <div id="popup"
-            style="display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:1em;border-radius:8px;">
+        <button onclick=`window.location="/auth/discord"`>Auth</button>
+        <div class="admin hidden">
+            
         </div>
-
+        <div class="admin_button"></div>
+        <div class="content">
+            <ul></ul>
+        </div>
         <script>
             async function checkAuth() {
                 const res = await fetch("/auth/check");
                 const data = await res.json();
-                const popup = document.getElementById("popup");
-                if (!data.authenticated) {
-                    popup.textContent = "Not authenticated";
-                    popup.style.display = "block";
-                } else {
-                    popup.textContent = `Welcome, ${data.username}`;
-                    popup.style.display = "block";
-                }
+                return data.authenticated;
             }
-            checkAuth();
 
             async function renderPosts() {
                 const res = await fetch("/posts/fetch");
                 const data = await res.json();
-                console.log(data);
+                
+                const ul = document.querySelector(".content ul"); // imagine id-val lekerni 2025-ben
+                ul.innerHTML = "";
+                
+                posts.forEach(p => {
+                    const li = document.createElement("li");
+                    li.classList.add("post");
+
+                    if (p.is_reply) {
+                        const reply = document.createElement("div");
+                        reply.textContent = p.is_reply ? "Reply" : "Message"; // todo: finish
+
+                    }
+                    reply.classList.add("");
+                });
             }
-            renderPosts();
+
+            let adminOpen = false;
+            let isAuthenticated = false;
+            
+            function setAdminOpen() {
+                adminOpen = !adminOpen;
+            }
+
+            async function refreshAuth() {
+                isAuthenticated = await checkAuth();
+            }
+
+            function refreshAdmin() {
+                const adminDiv = document.getElementById("admin");
+                if (isAuthenticated && adminOpen) adminDiv.classList.remove("hidden");
+                else adminDiv.classList.add("hidden");
+            }
+
+            async function init() {
+                await refreshAuth();
+                refreshAdmin();
+                renderPosts();
+            }
+
+            init();
         </script>
     </body>
 </html>

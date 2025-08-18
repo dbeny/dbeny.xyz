@@ -11,7 +11,7 @@ function parsePost(liElement) {
     // Skip <li new>
     if ($li.attr("new") !== undefined) return null;
 
-    const liIsReply = $li.hasClass("reply"); // <--- whole post is a reply
+    const liIsReply = $li.hasClass("reply"); // ha az egész poszt reply
 
     let content_before = { text: "", is_reply: false, emote: "" };
     let content_after = { text: "", is_reply: false, emote: "" };
@@ -24,14 +24,24 @@ function parsePost(liElement) {
             image = load(el)("img").attr("src") || null;
             beforeImage = false;
         } 
+        else if (el.type === "tag" && el.tagName === "br") {
+            // sortörés
+            if (beforeImage) {
+                content_before.text += "\n";
+                if (liIsReply) content_before.is_reply = true;
+            } else {
+                content_after.text += "\n";
+                if (liIsReply) content_after.is_reply = true;
+            }
+        }
         else if (el.type === "text") {
             const textContent = el.data.trim();
             if (textContent) {
                 if (beforeImage) {
-                    content_before.text += (content_before.text ? "\n" : "") + textContent;
+                    content_before.text += (content_before.text ? "" : "") + textContent;
                     if (liIsReply) content_before.is_reply = true;
                 } else {
-                    content_after.text += (content_after.text ? "\n" : "") + textContent;
+                    content_after.text += (content_after.text ? "" : "") + textContent;
                     if (liIsReply) content_after.is_reply = true;
                 }
             }
@@ -69,7 +79,7 @@ const publisher_id = "68a2e26fdf173b9e150429cb";
 export async function addDebugPosts() {
     try {
         await Mongobase.addPosts(postsArray, publisher_id);
-        console.log("POSTS IMPORTED SUCCESSFULLY");
+        console.log("Already existing posts imported");
     } catch (err) {
         console.error("Error importing posts:", err);
     }
