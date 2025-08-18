@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Marci Hajonéz Freak-wiki</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <button onclick="window.location='/auth/discord'">Register / Login</button>
+        <div id="popup"
+            style="display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:1em;border-radius:8px;">
+        </div>
+
+        <script>
+            async function checkAuth() {
+                const res = await fetch("/auth/check");
+                const data = await res.json();
+                const popup = document.getElementById("popup");
+                if (!data.authenticated) {
+                    popup.textContent = "Not authenticated";
+                    popup.style.display = "block";
+                } else {
+                    popup.textContent = `Welcome, ${data.username}`;
+                    popup.style.display = "block";
+                }
+            }
+            checkAuth();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+{
+	"name": "dbeny.xyz",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"test": "nodemon index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dbeny/dbeny.xyz.git"
+	},
+	"author": "dbeny, soviaat",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/dbeny/dbeny.xyz/issues"
+	},
+	"homepage": "https://github.com/dbeny/dbeny.xyz#readme",
+	"description": "",
+	"devDependencies": {
+		"nodemon": "3.1.10"
+	},
+	"type": "module",
+	"dependencies": {
+		"cheerio": "^1.1.2",
+		"connect-mongo": "^5.1.0",
+		"cookie-parser": "^1.4.7",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"express-session": "^1.18.1",
+		"mongoose": "^8.17.1",
+		"nodemailer": "^7.0.5",
+		"passport": "^0.7.0",
+		"passport-discord": "^0.1.4"
+	}
+}
