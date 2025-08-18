@@ -1,42 +1,52 @@
 import fs from "fs";
-import * as cheerio from "cheerio";
+import { load } from "cheerio"; // use load instead of * as cheerio
 import Mongobase from "./db/mongo.js";
 
-// Load HTML file
 const html = fs.readFileSync("./old/posts.html", "utf-8");
-const $ = cheerio.load(html); // global $ for the whole document
+const $ = load(html); // global $ for the whole document
 
 function parsePost(liElement) {
-    const $li = cheerio.load(liElement, { xmlMode: true })('li');
+    const $li = load(liElement)("li");
 
     // Skip <li new>
-    if ($li.attr('new') !== undefined) return null;
+    if ($li.attr("new") !== undefined) return null;
 
-    let content_before = { text: '', is_reply: false, emote: '' };
-    let content_after = { text: '', is_reply: false, emote: '' };
+    const liIsReply = $li.hasClass("reply"); // <--- whole post is a reply
+
+    let content_before = { text: "", is_reply: false, emote: "" };
+    let content_after = { text: "", is_reply: false, emote: "" };
     let image = null;
 
     let beforeImage = true;
 
     $li.contents().each((i, el) => {
-        if (el.type === 'tag' && el.tagName === 'img') {
-            image = $li(el).attr('src') || null;
+        if (el.type === "tag" && el.tagName === "img") {
+            image = load(el)("img").attr("src") || null;
             beforeImage = false;
-        } else if (el.type === 'text') {
+        } 
+        else if (el.type === "text") {
             const textContent = el.data.trim();
             if (textContent) {
-                if (beforeImage) content_before.text += (content_before.text ? '\n' : '') + textContent;
-                else content_after.text += (content_after.text ? '\n' : '') + textContent;
+                if (beforeImage) {
+                    content_before.text += (content_before.text ? "\n" : "") + textContent;
+                    if (liIsReply) content_before.is_reply = true;
+                } else {
+                    content_after.text += (content_after.text ? "\n" : "") + textContent;
+                    if (liIsReply) content_after.is_reply = true;
+                }
             }
-        } else if (el.type === 'tag' && el.tagName === 'span' && $li(el).hasClass('reply')) {
-            // Example: detect a reply by class="reply"
-            const textContent = $li(el).text().trim();
-            if (beforeImage) {
-                content_before.text += (content_before.text ? '\n' : '') + textContent;
-                content_before.is_reply = true;
-            } else {
-                content_after.text += (content_after.text ? '\n' : '') + textContent;
-                content_after.is_reply = true;
+        } 
+        else if (el.type === "tag") {
+            const $el = load(el).root();
+            const textContent = $el.text().trim();
+            if (textContent) {
+                if (beforeImage) {
+                    content_before.text += (content_before.text ? "\n" : "") + textContent;
+                    if ($el.hasClass("reply") || liIsReply) content_before.is_reply = true;
+                } else {
+                    content_after.text += (content_after.text ? "\n" : "") + textContent;
+                    if ($el.hasClass("reply") || liIsReply) content_after.is_reply = true;
+                }
             }
         }
     });
@@ -48,7 +58,7 @@ function parsePost(liElement) {
 
 // Build posts array
 const postsArray = [];
-$('li').each((i, el) => {
+$("li").each((i, el) => {
     const post = parsePost($.html(el));
     if (post) postsArray.push(post);
 });
@@ -65,7 +75,7 @@ export async function addDebugPosts() {
     }
 }
 
-// If you want to run directly from node:
+// Run directly
 if (process.argv[1].endsWith("importPosts.js")) {
     addDebugPosts();
 }

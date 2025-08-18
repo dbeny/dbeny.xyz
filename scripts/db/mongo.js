@@ -87,12 +87,14 @@ export default class Mongobase {
 
 		const admins = await this.models.User.find({});
 		const adminEmails = admins.map(a => a.email);
-		console.log("addPosts: adminEmails:", adminEmails)
 
 		await sendEmail(
 			adminEmails,
-			"Default posts added",
-			`<p>User <strong>${publisherName}</strong> added ${postsArray.length} posts.</p>`
+			`Already existing posts (${postsArray.length}) have been added`,
+			`<p>User <strong>${publisherName}</strong> added ${postsArray.length} posts.</p>
+			<div>${posts.map(post => {
+				return `<div>${JSON.stringify(post)}</div>`
+			})}</div>`
 		);
 		return await this.models.Posts.insertMany(posts);
 	}
