@@ -19,15 +19,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_DEV = process.env.NODE_ENV === "development";
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Initialize MongoDB
 await Mongobase.connect();
 
-// Session setup
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "supersecret",
@@ -47,26 +44,25 @@ app.use(
     })
 );
 
-// Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve static files
 app.use(express.static(path.join(process.cwd(), "static")));
+console.log("Public:", path.join(process.cwd(), "static"))
 
-// Basic routes
 app.get("/", (req, res) => {
     res.sendFile(path.join(process.cwd(), "static/index.html"));
 });
 
-// Discord OAuth routes
+app.get("/ohnoey", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "static/ohnoey.html"))
+});
+
 app.get("/auth/discord", passport.authenticate("discord"));
-app.get("/auth/discord/callback",
-    passport.authenticate("discord", {
-        failureRedirect: "/",
-        successRedirect: "/dashboard"
-    })
-);
+app.get("/auth/discord/callback", passport.authenticate("discord", {
+    failureRedirect: "/ohnoey",
+    successRedirect: "/"
+}));
 
 app.get("/auth/check", (req, res) => {
     if (req.isAuthenticated()) {
@@ -76,7 +72,7 @@ app.get("/auth/check", (req, res) => {
     }
 });
 
-await addDebugPosts()
+//await addDebugPosts()
 
 app.get("/posts/fetch", async (req, res) => {
     res.json(await Mongobase.getAllPosts());

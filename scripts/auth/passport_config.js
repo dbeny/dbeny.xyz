@@ -13,8 +13,6 @@ export function initPassportDiscord() {
 				authorizationURL: process.env.DISCORD_OAUTH_AUTHORIZATION_URL
             },
 			async (accessToken, refreshToken, profile, done) => {
-				console.log(JSON.stringify(profile, null, 4));
-
 				const neededGuild = process.env.DISCORD_OAUTH_GUILD_ID;
 				if (
 					!profile.guilds ||
@@ -44,7 +42,7 @@ export function initPassportDiscord() {
 						}
 
 						const newUserData = {
-							username: profile.username,
+							username: profile.global_name,
 							discordId: profile.id,
 							email: profile.email
 						};
