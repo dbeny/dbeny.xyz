@@ -262,6 +262,26 @@
                 return;
             }
 
+            if (before.is_reply && hasImage && !after.is_reply) {
+                const emptyDiv = document.createElement('div');
+                const divider = document.createElement('span');
+                divider.classList.add('replied');
+                li.classList.add('reply');
+
+                emptyDiv.style.whiteSpace = 'pre-wrap';
+                emptyDiv.appendChild(document.createTextNode(beforeText));
+                emptyDiv.prepend(divider);
+                li.appendChild(emptyDiv);
+
+                const img = document.createElement('img');
+
+                img.src = image;
+                li.appendChild(img);
+
+                ul.appendChild(li);
+                return;
+            }
+
             // Fallback
             ul.appendChild(li);
         }
