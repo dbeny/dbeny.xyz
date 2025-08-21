@@ -54,6 +54,10 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(process.cwd(), "static/index.html"));
 });
 
+app.get("/dashboard", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "static/dashboard.html"));
+});
+
 app.get("/ohnoey", (req, res) => {
     res.sendFile(path.join(process.cwd(), "static/ohnoey.html"))
 });
@@ -61,7 +65,7 @@ app.get("/ohnoey", (req, res) => {
 app.get("/auth/discord", passport.authenticate("discord"));
 app.get("/auth/discord/callback", passport.authenticate("discord", {
     failureRedirect: "/ohnoey",
-    successRedirect: "/"
+    successRedirect: "/dashboard"
 }));
 
 app.get("/auth/check", (req, res) => {
@@ -77,6 +81,41 @@ app.get("/auth/check", (req, res) => {
 app.get("/posts/fetch", async (req, res) => {
     res.json(await Mongobase.getAllPosts());
 });
+
+app.post("/posts/add", async (req, res) => {
+    let data = req.body;
+    if (!req.isAuthenticated() || req.isAuthenticated && data.content_before.text == "" && data.content_after.text == "" && data.image == "") {
+        res.json({success: false});
+    } else {
+        //let discord = req.user.discordId; <-- this is for when creating a whitelist for post handlers
+        console.log(JSON.stringify(data));
+
+        data.publisher_id = req.user._id;
+        console.log(await Mongobase.addPost(data));
+    }
+});
+
+app.post("/messages/add", async (req, res) => {
+    if (!req.isAuthenticated() && req.body.content == "") {
+        res.json({success: false});
+        return;
+    }
+
+    await Mongobase.addMessage({
+        content: req.body.content,
+        sender_id: req.user._id
+    });
+    res.json({success: true});
+});
+
+app.get("/messages/fetch", async (req, res) => {
+    if (!req.isAuthenticated()) {
+        res.json({success: false});
+        return;
+    }
+
+    res.json({success: true, messages: await Mongobase.getAllMessages()});
+})
 
 // Start server
 app.listen(PORT, () => {

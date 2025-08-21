@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-import { User, Posts } from "./schemas.js";
+import { User, Posts, Messages } from "./schemas.js";
 import {sendEmail} from "../mail/mailer.js";
 
 export default class Mongobase {
 	static models = {
 		User: null,
-		Posts: null
+		Posts: null,
+		Message: null
 	};
 
 	static async connect() {
@@ -16,6 +17,7 @@ export default class Mongobase {
 
 		this.models.User = User;
 		this.models.Posts = Posts;
+		this.models.Message = Messages;
 	}
 
 	//posts
@@ -36,9 +38,9 @@ export default class Mongobase {
 
 		await sendEmail(
 			adminEmails,
-			"New Post Added",
+			`New post added by ${publisherName}`,
 			`<p>User <strong>${publisherName}</strong> added a new post.</p>
-			<p>Content Before: ${content_before.text}</p>
+			<p>Content Before: ${content_before?.text || "N/A"}</p>
 			<p>Content After: ${content_after?.text || "N/A"}</p>
 			${image ? `<p>Image: <img src="${image}" alt="Post image" style="max-width:200px"/></p>` : ""}`
 		);
@@ -124,5 +126,55 @@ export default class Mongobase {
 		if (email) query.email = email;
 
 		return await this.models.User.findOne(query);
+	}
+
+	//messages
+	// add message
+	static async addMessage({ content, sender_id }) {
+		const msg = new this.models.Message({
+			content,
+			date: new Date(),
+			sender_id
+		});
+		return await msg.save();
+	}
+
+	// delete message
+	static async deleteMessage(id) {
+		return await this.models.Message.findByIdAndDelete(id);
+	}
+
+	// helper to format messages
+	static async formatMessages(messages) {
+		// gather unique sender ids
+		const senderIds = [...new Set(messages.map(m => m.sender_id.toString()))];
+		// fetch all users at once
+		const users = await this.models.User.find({ _id: { $in: senderIds } });
+		const userMap = new Map(users.map(u => [u._id.toString(), u.username]));
+
+		// map messages to desired format
+		return messages.map(m => ({
+			content: m.content,
+			date: m.date,
+			sender: userMap.get(m.sender_id.toString()) || null
+		}));
+	}
+
+	// get all messages
+	static async getAllMessages() {
+		const messages = await this.models.Message.find().sort({ date: 1 });
+		return await this.formatMessages(messages);
+	}
+
+	// get all messages with range (expects {start, end} as Date objects)
+	static async getAllMessagesWithRange(range) {
+		const query = {};
+		if (range?.start || range?.end) {
+			query.date = {};
+			if (range.start) query.date.$gte = range.start;
+			if (range.end) query.date.$lte = range.end;
+		}
+		const messages = await this.models.Message.find(query).sort({ date: 1 });
+		return await formatMessages(messages);
 	}
 }

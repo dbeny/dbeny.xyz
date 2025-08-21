@@ -35,6 +35,13 @@ const postSchema = new mongoose.Schema({
     }
 });
 
+//messages
+const msgSchema = new mongoose.Schema({
+    content: { type: String, required: true },
+    date: { type: Date, required: true },
+    sender_id: { type: ObjectId, required: true }
+});
+
 //export
 export const User = mongoose.model(
     process.env.MONGO_COLLECTION_USERS || "users",
@@ -45,3 +52,8 @@ export const Posts = mongoose.model(
     process.env.MONGO_COLLECTION_POSTS || "posts",
     postSchema
 );
+
+export const Messages = mongoose.model(
+    process.env.MONGO_COLLECTION_MESSAGES || "messages",
+    msgSchema
+)

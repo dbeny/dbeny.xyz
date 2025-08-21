@@ -9,7 +9,7 @@
 			content="Mert itt a vég tudománya (tényleg) amit még törött szemhéjjal se nyunyálsz. Végső nyugovóra tér a hasznos orrú nyugágy, amickor a lenyélő bandó remeg. A itt találod a forgókeverék hasznosságának funkcióját és. Veszíthetetlen pitélytárház és kollektív kacagó.">
 		<meta name="image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
 		<meta property="og:image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
-		<link rel="stylesheet" href="/style.css">
+		<link rel="stylesheet" href="/styles/index.css">
 		<link rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=open_in_new" />
 		<link rel="shortcut icon"
@@ -94,9 +94,6 @@
 			</div>
 		</div>
 		<div class="dts">
-			<div id="admin" class="hidden">
-				Látod?
-			</div>
 			<div class="ctx">
 				<h1>Dani és Beni padja type shit</h1>
 				<h3>Context: nem kapsz (ott van a cnc mogott)</h3>
@@ -104,12 +101,41 @@
 			<ul></ul>
 			<div class="footer">
 				<span>:BandiOfUndying: Made by Ben and Soviaat :catWow:</span>
-				<button onclick="window.location='/auth/discord'" id="dash" class="hidden">Dashboard</button>
-				<div class="admin_button" onclick="setAdminOpen()">Edit</div>
 			</div>
-			<script src="/script.js"></script>
 		</div>
+		<footer>
+			<div class="random">
+				láb
+				ol(l)ó
+				fészek
+			</div>
+			<div class="links"><a class="dash" href="/auth/discord">Dashboard</a></div>
+		</footer>
+		<script src="/script.js"></script>
 		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+			const floatingFooter = document.querySelector(".dts .footer");
+			const realFooter = document.querySelector("footer.the.real.foot.her");
+
+			const observer = new IntersectionObserver(entries => {
+				entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					// When real footer comes into view → stop floating
+					floatingFooter.style.position = "absolute";
+					floatingFooter.style.bottom = realFooter.offsetHeight + "px";
+				} else {
+					// Otherwise keep it fixed at bottom
+					floatingFooter.style.position = "fixed";
+					floatingFooter.style.bottom = "0";
+					floatingFooter.style.left = "0";
+					floatingFooter.style.width = "100%";
+				}
+				});
+			}, { threshold: 0 });
+
+			observer.observe(realFooter);
+			});
+
 			async function checkAuth() {
 				const res = await fetch('/auth/check');
 				const data = await res.json().catch(e => { console.error('auth json parse', e); return {}; });
@@ -145,10 +171,9 @@
 					const ul = document.querySelector('.dts ul');
 					ul.innerHTML = '';
 
-					const last100 = data.slice(-100);
-					console.log('rendering last100 length=', last100.length, last100);
 
-					last100.forEach((p, idx) => {
+
+					data.forEach((p, idx) => {
 						try {
 							const li = document.createElement('li');
 							li.style.whiteSpace = 'pre-wrap'; // render \n as line breaks
@@ -268,32 +293,18 @@
 			}
 
 			// admin / auth bits unchanged
-			let adminOpen = false;
 			let isAuthenticated = false;
-
-			function setAdminOpen() {
-				adminOpen = !adminOpen;
-				console.log(`admin: ${adminOpen}`);
-				refreshAdmin();
-			}
 
 			async function refreshAuth() {
 				isAuthenticated = await checkAuth();
 
-				const login = document.getElementById("dash");
-				if (isAuthenticated) login.classList.add("hidden");
-				else login.classList.remove("hidden");
-			}
-
-			function refreshAdmin() {
-				const adminDiv = document.getElementById('admin');
-				if (isAuthenticated && adminOpen) adminDiv.classList.remove('hidden');
-				else adminDiv.classList.add('hidden');
+				let dash = document.querySelector(".dash");
+				if (isAuthenticated) dash.href = "/dashboard";
+				else dash.href = "/auth/discord";
 			}
 
 			async function init() {
 				await refreshAuth();
-				refreshAdmin();
 				renderPosts();
 			}
 

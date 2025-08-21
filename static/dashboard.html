@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Marci Hajonéz Freak-poster</title>
+        <link rel="stylesheet" href="/styles/dashboard.css">
+        <meta name="theme-color" content="#309ffa">
+		<meta name="description"
+			content="Mert itt a vég tudománya (tényleg) amit még törött szemhéjjal se nyunyálsz. Végső nyugovóra tér a hasznos orrú nyugágy, amickor a lenyélő bandó remeg. A itt találod a forgókeverék hasznosságának funkcióját és. Veszíthetetlen pitélytárház és kollektív kacagó.">
+		<meta name="image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
+		<meta property="og:image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
+        <link rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=open_in_new" />
+		<link rel="shortcut icon"
+			href="https://cdn.discordapp.com/attachments/899955220468097065/1374635704922935356/picy.png?ex=682ec4c3&is=682d7343&hm=e91fe9a6ff250a3bbb8021f94c715a37138e4d12b72e6ae5b9b861758eb8c6f6&"
+			type="image/png">
+		<link rel="icon"
+			href="https://cdn.discordapp.com/attachments/899955220468097065/1374635704922935356/picy.png?ex=682ec4c3&is=682d7343&hm=e91fe9a6ff250a3bbb8021f94c715a37138e4d12b72e6ae5b9b861758eb8c6f6&"
+			type="image/png">
+    </head>
+    <body>
+		<div class="main">
+			<div class="content">
+				<div class="post_manager">
+					<div class="add_post">
+						<div class="content_before">
+							<span>Text: </span><textarea id="text1"></textarea>
+							<span>Reply? </span><input type="checkbox" id="reply1">
+						</div>
+						<div class="content_after">
+							<span>Text: </span><textarea id="text2"></textarea>
+							<span>Reply? </span><input type="checkbox" id="reply2">
+						</div>
+						<div class="image">
+							<span>URL: </span><input type="text" id="imgUrl">
+							<span>Preview</span><br>
+							<img id="preview" src="" alt="kep" class="hidden">
+						</div>
+						<button id="addPost">Add Post</button>
+					</div>
+					<div class="edit_post">
+
+					</div>
+
+                    <div class="preview-area">
+                        <strong>Preview: </strong>
+                        <ul id="postPreview"></ul>
+                    </div>
+				</div>
+				<div class="main_content" id="messageBoard">
+					<div class="messages" id="messages"></div>
+					<div class="send_message">
+						<textarea id="messageInput" placeholder="Write a message..."></textarea>
+						<button id="sendBtn">Send</button>
+					</div>
+				</div>
+			</div>
+			<footer>
+				<div class="links"><a href="/">Home</a></div>
+			</footer>
+		</div>
+    </body>
+	<script>
+		const board = document.getElementById("messages");
+		const input = document.getElementById("messageInput");
+		const sendBtn = document.getElementById("sendBtn");
+
+		async function fetchMessages() {
+			console.log("fetching messages")
+			const res = await fetch("/messages/fetch");
+			const data = await res.json();
+			console.log("fetched data: ", JSON.stringify(data, null, 4));
+
+			if (!data.success) alert("Failed to fetch messages");
+
+			board.innerHTML = "";
+			data.messages.forEach(m => {
+				const div = document.createElement("div");
+				div.className = "message";
+				div.innerHTML = `
+					<strong>${m.sender}</strong>
+					<span> (${new Date(m.date).toLocaleString()})</span>
+					<p>${m.content}</p>
+				`;
+				board.appendChild(div);
+			});
+			board.scrollTop = board.scrollHeight; // auto scroll to bottom
+		}
+
+		async function sendMessage() {
+			const content = input.value.trim();
+			if (!content) return;
+			let res = await fetch("/messages/add", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ content })
+			});
+			console.log(`send fetch result: ${JSON.stringify(res)}`)
+			input.value = "";
+			await fetchMessages();
+		}
+
+		sendBtn.addEventListener("click", sendMessage);
+
+		// load messages on page load
+		fetchMessages();
+	</script>
+	<script>
+		let state = {
+			content_before: {
+				text: "",
+				is_reply: false,
+				emote: ""
+			},
+			content_after: {
+				text: "",
+				is_reply: false,
+				emote: ""
+			},
+			image: ""
+		};
+
+		let text1El = document.getElementById("text1");
+		let reply1El = document.getElementById("reply1");
+		let text2El = document.getElementById("text2");
+		let reply2El = document.getElementById("reply2");
+		let imgUrlEl = document.getElementById("imgUrl");
+		let previewEl = document.getElementById("preview");
+
+		text1El.addEventListener("input", e => {
+			state.content_before.text = e.target.value;
+            renderPreview();
+		});
+		reply1El.addEventListener("change", e => {
+			state.content_before.is_reply = e.target.checked;
+            renderPreview();
+		});
+		text2El.addEventListener("input", e => {
+			state.content_after.text = e.target.value;
+            renderPreview();
+            console.log(state)
+		});
+		reply2El.addEventListener("change", e => {
+			state.content_after.is_reply = e.target.checked;
+            renderPreview();
+		});
+		imgUrlEl.addEventListener("input", e => {
+			state.image = e.target.value;
+            renderPreview();
+		});
+
+		async function addPost() {
+			let res = await fetch("/posts/add", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(state)
+			});
+			let json = await res.json();
+			console.log(json);
+		}
+
+		document.getElementById("addPost").addEventListener("click", async () => {
+			await addPost();
+		});
+
+        const stripLeftEachLine = s => {
+            if (s == null) return '';
+            return String(s).replace(/\r\n/g, '\n').replace(/^[ \t]+/gm, '');
+        };
+        const hasText = v => v != null && String(v).trim() !== '';
+
+        function renderPreview() {
+            const ul = document.getElementById('postPreview');
+            ul.innerHTML = '';
+
+            const li = document.createElement('li');
+            li.style.whiteSpace = 'pre-wrap';
+
+            const before = state.content_before ?? null;
+            const after = state.content_after ?? null;
+            const image = (state.image && String(state.image).trim() !== '') ? String(state.image) : null;
+
+            const beforeText = before && before.text != null ? stripLeftEachLine(before.text) : '';
+            const afterText = after && after.text != null ? stripLeftEachLine(after.text) : '';
+
+            const hasBefore = before && hasText(beforeText);
+            const hasAfter = after && hasText(afterText);
+            const hasImage = !!image;
+
+            // Reply case
+            if (before && before.is_reply) {
+                const emptyDiv = document.createElement('div');
+                const divider = document.createElement('span');
+                divider.classList.add('replied');
+                li.classList.add('reply');
+
+                emptyDiv.style.whiteSpace = 'pre-wrap';
+                emptyDiv.appendChild(document.createTextNode(beforeText));
+                emptyDiv.prepend(divider);
+                li.appendChild(emptyDiv);
+                ul.appendChild(li);
+                return;
+            }
+
+            // Case 1: only before
+            if (hasBefore && !hasImage && !hasAfter) {
+                li.appendChild(document.createTextNode(beforeText));
+                ul.appendChild(li);
+                return;
+            }
+
+            // Case 2: before + image
+            if (hasBefore && hasImage && !hasAfter) {
+                li.appendChild(document.createTextNode(beforeText));
+                const img = document.createElement('img');
+                img.src = image;
+                li.appendChild(img);
+                ul.appendChild(li);
+                return;
+            }
+
+            // Case 3: image + after
+            if (!hasBefore && hasImage && hasAfter) {
+                const img = document.createElement('img');
+                img.src = image;
+
+                li.appendChild(img);
+                li.appendChild(document.createTextNode('\n' + afterText));
+                ul.appendChild(li);
+                return;
+            }
+
+            // Case 4: before + image + after
+            if (hasBefore && hasImage && hasAfter) {
+                li.appendChild(document.createTextNode(beforeText));
+                const img = document.createElement('img');
+                img.src = image;
+
+                li.appendChild(img);
+                li.appendChild(document.createTextNode('\n' + afterText));
+                ul.appendChild(li);
+                return;
+            }
+
+            // Only after
+            if (!hasBefore && !hasImage && hasAfter) {
+                li.appendChild(document.createTextNode(afterText));
+                ul.appendChild(li);
+                return;
+            }
+
+            // Only image
+            if (!hasBefore && hasImage && !hasAfter) {
+                const img = document.createElement('img');
+
+                img.src = image;
+                li.appendChild(img);
+                ul.appendChild(li);
+                return;
+            }
+
+            // Fallback
+            ul.appendChild(li);
+        }
+	</script>
+	<script>
+		let isAuthenticated = false;
+
+		async function checkAuth() {
+			const res = await fetch('/auth/check');
+			const data = await res.json().catch(e => { console.error('auth json parse', e); return {}; });
+			return Boolean(data.authenticated);
+		}
+
+		async function refreshAuth() {
+			isAuthenticated = await checkAuth();
+			
+			if (!isAuthenticated) window.location = "/ohnoey";
+		}
+
+		async function init() {
+			await refreshAuth();
+			
+
+			setInterval(async () => await refreshAuth(), 5000)
+		}
+
+		init();
+	</script>
+</html>

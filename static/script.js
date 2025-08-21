@@ -39,7 +39,6 @@ function getTimeUntilLongTime(currentDate, targetDate) {
 	const minutes = Math.floor((remainingTime%(1000*60*60))/(1000*60))
 	const seconds = Math.floor((remainingTime%(1000*60))/1000)
 
-	console.log(`RETURNED:${JSON.stringify([updateNum(days), updateNum(hours), updateNum(minutes), updateNum(seconds)])}`)
 	return [updateNum(days), updateNum(hours), updateNum(minutes), updateNum(seconds)]
 }
 
