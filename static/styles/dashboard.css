@@ -34,8 +34,7 @@ body {
 .main_content {
     display: flex;
     flex-direction: column;
-    min-width: 50%;
-    width: max-content;
+    width: 50%;
     height: 100%;
 }
 

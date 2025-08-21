@@ -105,6 +105,7 @@
 
 		// load messages on page load
 		fetchMessages();
+		setInterval(() => fetchMessages(), 10*1000);
 	</script>
 	<script>
 		let state = {
@@ -172,119 +173,140 @@
         };
         const hasText = v => v != null && String(v).trim() !== '';
 
-        function renderPreview() {
-            const ul = document.getElementById('postPreview');
-            ul.innerHTML = '';
+        function createReplyBlock(text) {
+            const div = document.createElement('div');
+            div.style.whiteSpace = 'pre-wrap';
+            const divider = document.createElement('span');
+            divider.classList.add('replied');
+            div.prepend(divider);
+            if (text) div.appendChild(document.createTextNode(text));
+            return div;
+        }
 
+        function renderSinglePost(post) {
             const li = document.createElement('li');
             li.style.whiteSpace = 'pre-wrap';
 
-            const before = state.content_before ?? null;
-            const after = state.content_after ?? null;
-            const image = (state.image && String(state.image).trim() !== '') ? String(state.image) : null;
+            const before = post && post.content_before ? post.content_before : null;
+            const after  = post && post.content_after  ? post.content_after  : null;
+            const image  = post && post.image && String(post.image).trim() !== '' ? String(post.image) : null;
 
             const beforeText = before && before.text != null ? stripLeftEachLine(before.text) : '';
-            const afterText = after && after.text != null ? stripLeftEachLine(after.text) : '';
+            const afterText  = after  && after.text  != null ? stripLeftEachLine(after.text)  : '';
 
-            const hasBefore = before && hasText(beforeText);
-            const hasAfter = after && hasText(afterText);
+            const beforeExists = !!before;
+            const afterExists  = !!after;
+            const hasBeforeText = hasText(beforeText);
+            const hasAfterText  = hasText(afterText);
             const hasImage = !!image;
 
-            // Reply case
-            if (before && before.is_reply) {
-                const emptyDiv = document.createElement('div');
-                const divider = document.createElement('span');
-                divider.classList.add('replied');
+            const beforeIsReply = beforeExists && Boolean(before.is_reply);
+            const afterIsReply  = afterExists  && Boolean(after.is_reply);
+
+            if (beforeIsReply && hasImage && afterIsReply) {
                 li.classList.add('reply');
-
-                emptyDiv.style.whiteSpace = 'pre-wrap';
-                emptyDiv.appendChild(document.createTextNode(beforeText));
-                emptyDiv.prepend(divider);
-                li.appendChild(emptyDiv);
-                ul.appendChild(li);
-                return;
+                li.appendChild(createReplyBlock(beforeText));
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                li.appendChild(createReplyBlock(afterText));
+                return li;
             }
 
-            // Case 1: only before
-            if (hasBefore && !hasImage && !hasAfter) {
+            if (beforeIsReply && hasImage && afterExists && !afterIsReply) {
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock(beforeText));
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                if (hasAfterText) li.appendChild(document.createTextNode('\n' + afterText));
+                return li;
+            }
+
+            if (beforeExists && !beforeIsReply && hasImage && afterIsReply) {
                 li.appendChild(document.createTextNode(beforeText));
-                ul.appendChild(li);
-                return;
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock('\n' + afterText));
+                return li;
             }
 
-            // Case 2: before + image
-            if (hasBefore && hasImage && !hasAfter) {
+            if (beforeIsReply && hasImage && !afterExists) {
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock(beforeText));
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                return li;
+            }
+
+            if (!beforeExists && hasImage && afterIsReply) {
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock('\n' + afterText));
+                return li;
+            }
+
+            if (hasBeforeText && hasImage && hasAfterText && !beforeIsReply && !afterIsReply) {
                 li.appendChild(document.createTextNode(beforeText));
-                const img = document.createElement('img');
-                img.src = image;
-                li.appendChild(img);
-                ul.appendChild(li);
-                return;
-            }
-
-            // Case 3: image + after
-            if (!hasBefore && hasImage && hasAfter) {
-                const img = document.createElement('img');
-                img.src = image;
-
-                li.appendChild(img);
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
                 li.appendChild(document.createTextNode('\n' + afterText));
-                ul.appendChild(li);
-                return;
+                return li;
             }
 
-            // Case 4: before + image + after
-            if (hasBefore && hasImage && hasAfter) {
+            if (hasBeforeText && !hasImage && !hasAfterText) {
                 li.appendChild(document.createTextNode(beforeText));
-                const img = document.createElement('img');
-                img.src = image;
-
-                li.appendChild(img);
-                li.appendChild(document.createTextNode('\n' + afterText));
-                ul.appendChild(li);
-                return;
+                return li;
             }
 
-            // Only after
-            if (!hasBefore && !hasImage && hasAfter) {
+            if (hasBeforeText && hasImage && !hasAfterText && !beforeIsReply) {
+                li.appendChild(document.createTextNode(beforeText));
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                return li;
+            }
+
+            if (!hasBeforeText && hasImage && hasAfterText && !afterIsReply) {
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                li.appendChild(document.createTextNode('\n' + afterText));
+                return li;
+            }
+
+            if (!hasBeforeText && !hasImage && hasAfterText && !afterIsReply) {
                 li.appendChild(document.createTextNode(afterText));
-                ul.appendChild(li);
-                return;
+                return li;
             }
 
-            // Only image
-            if (!hasBefore && hasImage && !hasAfter) {
-                const img = document.createElement('img');
-
-                img.src = image;
-                li.appendChild(img);
-                ul.appendChild(li);
-                return;
+            if (!hasBeforeText && hasImage && !hasAfterText) {
+                const img = document.createElement('img'); img.src = image; li.appendChild(img);
+                return li;
             }
 
-            if (before.is_reply && hasImage && !after.is_reply) {
-                const emptyDiv = document.createElement('div');
-                const divider = document.createElement('span');
-                divider.classList.add('replied');
+            if (beforeIsReply && !hasImage && !afterExists) {
                 li.classList.add('reply');
-
-                emptyDiv.style.whiteSpace = 'pre-wrap';
-                emptyDiv.appendChild(document.createTextNode(beforeText));
-                emptyDiv.prepend(divider);
-                li.appendChild(emptyDiv);
-
-                const img = document.createElement('img');
-
-                img.src = image;
-                li.appendChild(img);
-
-                ul.appendChild(li);
-                return;
+                li.appendChild(createReplyBlock(beforeText));
+                return li;
+            }
+            if (afterIsReply && !hasImage && !beforeExists) {
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock(afterText));
+                return li;
+            }
+            if (beforeIsReply && afterIsReply && !hasImage) {
+                li.classList.add('reply');
+                li.appendChild(createReplyBlock(beforeText));
+                li.appendChild(document.createTextNode('\n'));
+                li.appendChild(createReplyBlock(afterText));
+                return li;
             }
 
-            // Fallback
-            ul.appendChild(li);
+            if (hasBeforeText) li.appendChild(document.createTextNode(beforeText));
+            if (hasImage) { const img = document.createElement('img'); img.src = image; li.appendChild(img); }
+            if (hasAfterText) li.appendChild(document.createTextNode('\n' + afterText));
+
+            return li;
         }
+
+        function renderPreview() {
+            const ul = document.getElementById('postPreview');
+            if (!ul) return;
+            ul.innerHTML = '';
+            ul.appendChild(renderSinglePost(state));
+        }
+
 	</script>
 	<script>
 		let isAuthenticated = false;
