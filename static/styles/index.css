@@ -25,6 +25,8 @@ li[new]:after {
 }   
 
 li {
+    display: flex;
+    flex-direction: column;
     list-style-type: none;
     width: 50%;
     padding: .5em;
@@ -163,7 +165,7 @@ h4 {
 }
 
 .main > .kardos-container {
-    display: flex;
+    display: flex;  
     flex-direction: column;
     gap: .5em;
     background-color: var(--dark);
@@ -274,6 +276,7 @@ img.emote {
 
 li > img {
     border-radius: var(--small-br);
+    max-width: 300px;
 }
 
 .reply > div {

@@ -66,33 +66,95 @@
 		const input = document.getElementById("messageInput");
 		const sendBtn = document.getElementById("sendBtn");
 
-		async function fetchMessages() {
-			console.log("fetching messages")
-			const res = await fetch("/messages/fetch");
-			const data = await res.json();
-			console.log("fetched data: ", JSON.stringify(data, null, 4));
+        
+        function isValidUrl(str) {
+            try {
+                new URL(String(str).trim());
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
 
-			if (!data.success) alert("Failed to fetch messages");
+        async function isImageUrl(url) {
+            if (!url) return false;
+            const s = String(url).trim();
+            if (s.startsWith('data:image/')) return true;
+            if (/\.(png|jpe?g|gif|bmp|webp|svg)(\?.*)?$/i.test(s)) return true;
+            try {
+                const res = await fetch(s, { method: 'HEAD' });
+                if (!res.ok) return false;
+                const ct = res.headers.get('content-type') || '';
+                return ct.toLowerCase().startsWith('image/');
+            } catch (e) {
+                return false;
+            }
+        }
 
-			board.innerHTML = "";
-			data.messages.forEach(m => {
-				const div = document.createElement("div");
-				div.className = "message";
-				div.innerHTML = `
-					<strong>${m.sender}</strong>
-					<span> (${new Date(m.date).toLocaleString()})</span>
-					<p>${m.content}</p>
-				`;
-				board.appendChild(div);
-			});
-			board.scrollTop = board.scrollHeight; // auto scroll to bottom
-		}
+
+        async function fetchMessages() {
+            console.log("fetching messages");
+            const res = await fetch("/messages/fetch");
+            const data = await res.json();
+            console.log("fetched data: ", JSON.stringify(data, null, 4));
+            
+            if (!data.success) {
+                alert("Failed to fetch messages");
+                return;
+            }
+
+            board.innerHTML = "";
+            for (const m of data.messages) {
+                const div = document.createElement("div");
+                div.className = "message";
+
+                const strong = document.createElement("strong");
+                strong.textContent = m.sender ?? 'unknown';
+                
+                const time = document.createElement("span");
+                const d = new Date(m.date ?? Date.now());
+                time.textContent = ` (${d.toLocaleString()})`;
+                
+                const p = document.createElement("p");
+				p.style.whiteSpace = "pre-wrap";
+                const content = String(m.content ?? '').trim();
+
+                if (isValidUrl(content)) {
+                    const imageCheck = await isImageUrl(content);
+                    if (imageCheck) {
+                        const img = document.createElement("img");
+                        img.src = content;
+                        img.alt = "";
+                        img.style.maxHeight = "300px";
+                        img.style.maxWidth = "100%";
+                        img.loading = "lazy";
+                        p.appendChild(img);
+                    } else {
+                        const a = document.createElement("a");
+                        a.href = content;
+                        a.textContent = content;
+                        a.target = "_blank";
+                        a.rel = "noopener noreferrer";
+                        p.appendChild(a);
+                    }
+                } else {
+                    p.textContent = content;
+                }
+
+                div.appendChild(strong);
+                div.appendChild(time);
+                div.appendChild(p);
+                board.appendChild(div);
+            }
+
+            board.scrollTop = board.scrollHeight;
+        }
 
 		async function sendMessage() {
 			const content = input.value.trim();
 			if (!content) return;
 			let res = await fetch("/messages/add", {
-				method: "POST",
+                method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ content })
 			});
@@ -100,9 +162,31 @@
 			input.value = "";
 			await fetchMessages();
 		}
-
+        
 		sendBtn.addEventListener("click", sendMessage);
 
+        input.addEventListener('keydown', (e) => {
+			if (e.key !== 'Enter') return;
+			if (e.isComposing) return;
+
+			// Ctrl/Cmd+Enter -> insert newline
+			if (e.ctrlKey || e.shiftKey) {
+				const start = input.selectionStart;
+				const end = input.selectionEnd;
+				const v = input.value;
+				input.value = v.slice(0, start) + '\n' + v.slice(end);
+				input.selectionStart = input.selectionEnd = start + 1;
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				return;
+			}
+
+			// plain Enter -> send
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			sendMessage();
+		});
+        
 		// load messages on page load
 		fetchMessages();
 		setInterval(() => fetchMessages(), 10*1000);
@@ -203,99 +287,28 @@
             const beforeIsReply = beforeExists && Boolean(before.is_reply);
             const afterIsReply  = afterExists  && Boolean(after.is_reply);
 
-            if (beforeIsReply && hasImage && afterIsReply) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                li.appendChild(createReplyBlock(afterText));
-                return li;
+            if (beforeIsReply || afterIsReply) li.classList.add('reply');
+
+            if (beforeExists) {
+                if (beforeIsReply) li.appendChild(createReplyBlock(beforeText));
+                else if (hasBeforeText) li.appendChild(document.createTextNode(beforeText));
             }
 
-            if (beforeIsReply && hasImage && afterExists && !afterIsReply) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                if (hasAfterText) li.appendChild(document.createTextNode('\n' + afterText));
-                return li;
+            if (hasImage) {
+                const img = document.createElement('img');
+                img.src = image;
+                li.appendChild(img);
             }
 
-            if (beforeExists && !beforeIsReply && hasImage && afterIsReply) {
-                li.appendChild(document.createTextNode(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock('\n' + afterText));
-                return li;
+            if (afterExists) {
+                if (afterIsReply) {
+                    li.appendChild(createReplyBlock(afterText));
+                } else if (hasAfterText) {
+                    const needNewline = li.childNodes.length > 0;
+                    if (needNewline) li.appendChild(document.createTextNode('\n' + afterText));
+                    else li.appendChild(document.createTextNode(afterText));
+                }
             }
-
-            if (beforeIsReply && hasImage && !afterExists) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                return li;
-            }
-
-            if (!beforeExists && hasImage && afterIsReply) {
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock('\n' + afterText));
-                return li;
-            }
-
-            if (hasBeforeText && hasImage && hasAfterText && !beforeIsReply && !afterIsReply) {
-                li.appendChild(document.createTextNode(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                li.appendChild(document.createTextNode('\n' + afterText));
-                return li;
-            }
-
-            if (hasBeforeText && !hasImage && !hasAfterText) {
-                li.appendChild(document.createTextNode(beforeText));
-                return li;
-            }
-
-            if (hasBeforeText && hasImage && !hasAfterText && !beforeIsReply) {
-                li.appendChild(document.createTextNode(beforeText));
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                return li;
-            }
-
-            if (!hasBeforeText && hasImage && hasAfterText && !afterIsReply) {
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                li.appendChild(document.createTextNode('\n' + afterText));
-                return li;
-            }
-
-            if (!hasBeforeText && !hasImage && hasAfterText && !afterIsReply) {
-                li.appendChild(document.createTextNode(afterText));
-                return li;
-            }
-
-            if (!hasBeforeText && hasImage && !hasAfterText) {
-                const img = document.createElement('img'); img.src = image; li.appendChild(img);
-                return li;
-            }
-
-            if (beforeIsReply && !hasImage && !afterExists) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(beforeText));
-                return li;
-            }
-            if (afterIsReply && !hasImage && !beforeExists) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(afterText));
-                return li;
-            }
-            if (beforeIsReply && afterIsReply && !hasImage) {
-                li.classList.add('reply');
-                li.appendChild(createReplyBlock(beforeText));
-                li.appendChild(document.createTextNode('\n'));
-                li.appendChild(createReplyBlock(afterText));
-                return li;
-            }
-
-            if (hasBeforeText) li.appendChild(document.createTextNode(beforeText));
-            if (hasImage) { const img = document.createElement('img'); img.src = image; li.appendChild(img); }
-            if (hasAfterText) li.appendChild(document.createTextNode('\n' + afterText));
 
             return li;
         }
@@ -306,7 +319,6 @@
             ul.innerHTML = '';
             ul.appendChild(renderSinglePost(state));
         }
-
 	</script>
 	<script>
 		let isAuthenticated = false;

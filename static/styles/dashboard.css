@@ -35,12 +35,13 @@ body {
     display: flex;
     flex-direction: column;
     width: 50%;
-    height: 100%;
+    height: 85vh;
 }
 
 .messages {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll;
+    height: 10rem;
     padding: 8px;
 }
 
