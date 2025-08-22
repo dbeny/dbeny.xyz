@@ -78,6 +78,11 @@ app.get("/auth/check", (req, res) => {
 
 //await addDebugPosts()
 
+let whitelist = [ 
+    "458312026637336598",
+    "708012757726920784"
+]
+
 app.get("/posts/fetch", async (req, res) => {
     res.json(await Mongobase.getAllPosts());
 });
@@ -87,7 +92,11 @@ app.post("/posts/add", async (req, res) => {
     if (!req.isAuthenticated() || req.isAuthenticated && data.content_before.text == "" && data.content_after.text == "" && data.image == "") {
         res.json({success: false});
     } else {
-        //let discord = req.user.discordId; <-- this is for when creating a whitelist for post handlers
+        let discord = req.user.discordId;
+        if (!whitelist.includes(discord)) {
+            res.json({success: false});
+            return;
+        }
         console.log(JSON.stringify(data));
 
         data.publisher_id = req.user._id;

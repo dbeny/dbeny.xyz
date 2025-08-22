@@ -86,6 +86,29 @@ body {
     );
 }
 
+.add_post {
+    display: flex;
+    flex-direction: column;
+}
+
+.content_before & .content_after & .image {
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    align-content: center;
+    justify-content: center;
+}
+
+.image input {
+    height: 3vh;
+    width: 15vw;
+}
+
+textarea {
+    height: 6vh;  
+    width: 15vw;
+}
+
 li {
     list-style-type: none;
     display: flex;
