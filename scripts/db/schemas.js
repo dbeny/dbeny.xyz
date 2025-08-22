@@ -56,4 +56,4 @@ export const Posts = mongoose.model(
 export const Messages = mongoose.model(
     process.env.MONGO_COLLECTION_MESSAGES || "messages",
     msgSchema
-)
+);

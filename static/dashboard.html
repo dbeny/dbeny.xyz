@@ -111,9 +111,13 @@
                 const strong = document.createElement("strong");
                 strong.textContent = m.sender ?? 'unknown';
                 
-                const time = document.createElement("span");
-                const d = new Date(m.date ?? Date.now());
-                time.textContent = ` (${d.toLocaleString()})`;
+				const time = document.createElement("span");
+				const d = new Date(m.date ?? Date.now());
+
+				const pad = n => String(n).padStart(2, "0");
+				const formatted = `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+				time.textContent = ` ${formatted}`;
                 
                 const p = document.createElement("p");
 				p.style.whiteSpace = "pre-wrap";

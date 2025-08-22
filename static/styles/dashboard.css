@@ -39,10 +39,22 @@ body {
 }
 
 .messages {
+    font-family: monospace;
+    font-size: large;
     flex: 1;
     overflow-y: scroll;
     height: 10rem;
     padding: 8px;
+}
+
+.message span {
+    color: rgba(131, 131, 131, 0.8);
+}
+
+.message p {
+    margin-top: 3px;
+    margin-bottom: 1rem;
+    color: rgba(243, 243, 243, 0.9);
 }
 
 .send_message {
