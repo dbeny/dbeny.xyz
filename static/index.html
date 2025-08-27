@@ -10,6 +10,7 @@
 		<meta name="image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
 		<meta property="og:image" content="https://github.com/dbeny/dbeny.xyz/blob/main/torjonel.png">
 		<link rel="stylesheet" href="/styles/index.css">
+		<link rel="stylesheet" href="/styles/aliencat.css">
 		<link rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=open_in_new" />
 		<link rel="shortcut icon"
@@ -20,6 +21,7 @@
 			type="image/png">
 	</head>
 	<body>
+		<!--
 		<div class="main-container">
 			<div class="main">
 				<h1>í komikus balsors kalkulátor</h1>
@@ -92,15 +94,45 @@
 						funkcióját és. Veszíthetetlen pitélytárház és kollektív kacagó.</p>
 				</div>
 			</div>
-		</div>
-		<div class="dts">
-			<div class="ctx">
-				<h1>Dani és Beni padja type shit</h1>
-				<h3>Context: nem kapsz (ott van a cnc mogott)</h3>
+		</div>-->
+		<div class="main-holder">
+			<div class="dts">
+				<div class="ctx">
+					<h1>Dani és Beni padja type shit</h1>
+					<h3>Context: nem kapsz (ott van a cnc mogott)</h3>
+				</div>
+				<ul></ul>
+				<div class="footer">
+					<span>:BandiOfUndying: Made by Ben and Soviaat :catWow:</span>
+				</div>
 			</div>
-			<ul></ul>
-			<div class="footer">
-				<span>:BandiOfUndying: Made by Ben and Soviaat :catWow:</span>
+			<div class="games">
+				<div class="game" id="aliencat">
+					<div class="ac-difficulty">
+						<select id="ac-diff-selector">
+							<option value="easy">Könnyű</option>
+							<option value="normal">Normál</option>
+							<option value="hard">Nehéz</option>
+						</select>
+					</div>
+					<div class="ac-game">
+						<div class="shark animal">
+							<span class="text">...</span>
+							<img src="/imgs/aliencat/forestshark2.png" alt="" class="image squish">
+							<span class="counter">0</span>
+						</div>
+						<div class="data-holder">
+							<span class="score">0</span>
+							<span class="event"></span>
+						</div>
+						<div class="cat animal">
+							<span class="text">...</span>
+							<img src="/imgs/aliencat/aliencat.png" alt="" class="image">
+							<span class="counter">0</span>
+						</div>
+					</div>
+					<img src="/imgs/aliencat/forestshark_jumpscare.png" alt="" class="scare">
+				</div>
 			</div>
 		</div>
 		<footer>
@@ -111,6 +143,7 @@
 			</div>
 			<div class="links"><a class="dash" href="/auth/discord">Dashboard</a></div>
 		</footer>
+		<script src="/aliencat.js"></script>
 		<script src="/script.js"></script>
 		<script>
 			document.addEventListener("DOMContentLoaded", () => {
