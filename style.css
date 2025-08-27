@@ -289,8 +289,8 @@ li > img {
     border-radius: var(--small-br);
 }
 
-li.greentext {
-    color: limegreen;
+.greentext {
+    color: #789922;
 }
 
 .reply > div {
@@ -337,3 +337,4 @@ li {
     color: gold;
 
 }
+
