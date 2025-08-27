@@ -289,6 +289,10 @@ li > img {
     border-radius: var(--small-br);
 }
 
+li.greentext {
+    color: limegreen;
+}
+
 .reply > div {
     opacity: .6;
     font-style: italic;
@@ -331,4 +335,5 @@ li {
 
 .gold {
     color: gold;
+
 }
