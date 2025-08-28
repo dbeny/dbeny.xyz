@@ -21,7 +21,6 @@
 			type="image/png">
 	</head>
 	<body>
-		<!--
 		<div class="main-container">
 			<div class="main">
 				<h1>í komikus balsors kalkulátor</h1>
@@ -93,8 +92,30 @@
 						hasznos orrú nyugágy, amickor a lenyélő bandó remeg. A itt találod a forgókeverék hasznosságának
 						funkcióját és. Veszíthetetlen pitélytárház és kollektív kacagó.</p>
 				</div>
+				<div class="these">
+					<dl>
+						<dt><h3>Harci Majonéz</h3></dt>
+						<dd>A harci majonéz híres volt a másfeledik (1,5.) világháborúban. Ezt használták a német hadibombázók az ellenséges fegyveres gyalogság ellen, hogy elcsússzanak rajta. Lehet egyenlet is.</dd>
+					
+						<dt><h3>Pitély</h3></dt>
+						<dd>A legszinkronizáltabb dolog az egész Univerzumban. Mindenhol ott van, ha figyelsz, érzed, látod, tudod. Minősítő jelzőként is funkcionálhat.</dd>
+					
+						<dt><h3>Nyünyünyü</h3></dt>
+						<dd>Sokat dumálsz? NYÜNYÜNYÜ 🤏🤏</dd>
+					</dl>
+					<dl>
+						<dt><h3>Pitélytárház</h3></dt>
+						<dd>Egy veszíthetetlen, fontos dokumentum, amely lényegességi haragcsalásokat tárol egy internetes felületen.</dd>
+					
+						<dt><h3>Pitély</h3></dt>
+						<dd></dd>
+					
+						<dt><h3>Kollektív kacagó</h3></dt>
+						<dd>Egy esemény, amely által a jelenlévők közösen hangos kacagásba kezdenek.</dd>
+					</dl>
+				</div>
 			</div>
-		</div>-->
+		</div>
 		<div class="main-holder">
 			<div class="dts">
 				<div class="ctx">
@@ -107,13 +128,18 @@
 				</div>
 			</div>
 			<div class="games">
+				<h3>Aliencat vs ForestShark</h3>
 				<div class="game" id="aliencat">
 					<div class="ac-difficulty">
+						<h2>Válassz nehézséget!</h2>
 						<select id="ac-diff-selector">
 							<option value="easy">Könnyű</option>
 							<option value="normal">Normál</option>
 							<option value="hard">Nehéz</option>
+							<option value="nightmare" style="font-family: Papyrus;">ULTRANIGHTMARE</option>
 						</select>
+						<img src="/imgs/aliencat/easy.png" width="200px" alt="">
+						<button id="ac-start">Start</button>
 					</div>
 					<div class="ac-game">
 						<div class="shark animal">
@@ -123,6 +149,7 @@
 						</div>
 						<div class="data-holder">
 							<span class="score">0</span>
+							<span class="time"></span>
 							<span class="event"></span>
 						</div>
 						<div class="cat animal">
