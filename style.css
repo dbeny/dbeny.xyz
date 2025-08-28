@@ -24,6 +24,20 @@ html {
     box-sizing: border-box;
 }
 
+dl > dt > h3 {
+    width: max-content;
+}
+
+.these {
+    display: flex
+}
+
+dl > dd {
+    font-size: .85rem;
+    margin-bottom: .5rem;
+    max-width: 15rem;
+}
+
 li[new] {
     background-color: var(--theme);
     color: white;
@@ -337,4 +351,5 @@ li {
     color: gold;
 
 }
+
 
