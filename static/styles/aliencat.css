@@ -1,0 +1,67 @@
+.ac-game {
+    display: flex;
+    flex-direction: row;
+    width: 800px;
+
+    justify-content: space-between;
+}
+
+.ac-game, .ac-game * {
+    box-sizing: border-box;
+    overflow: hidden;
+    user-select: none;    
+}
+
+.ac-game > .data-holder {
+    display: flex;
+    flex-direction: column;
+}
+
+.score {
+    font-weight: bold;
+    font-size: 3rem;
+    text-align: center;
+}
+
+.event {
+    font-family: Papyrus;
+    color: red;
+    font-size: 1.8rem;
+    text-align: center;
+    font-style: italic;
+}
+
+.animal {
+    display: flex;
+    flex-direction: column;
+}
+
+.animal > .image {
+    width: auto;
+    height: 200px;
+}
+
+.image:hover {
+    border: 2px solid white;
+}
+
+.animal > .text {
+    width: 100%;
+    border: 2px solid white;
+    padding: 0.2em;
+}
+
+.animal > .counter {
+    margin-top: 0.5em;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.scare {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    display: none;
+}

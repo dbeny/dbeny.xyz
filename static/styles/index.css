@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 @import url('./common.css');
 
+.main-holder {
+    display: flex;
+    flex-direction: row;
+}
+
+.games {
+    padding: 2rem;
+}
+
 #time {
     display: flex;
     flex-direction: row;

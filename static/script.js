@@ -84,7 +84,8 @@ function getRemainingTime() {
 }
 
 function setInnerTextForId(id, text) {
-	document.getElementById(id).innerText = text
+	let elem = document.getElementById(id)
+	if (elem) elem.innerText = text
 }
 
 function initialize() {
