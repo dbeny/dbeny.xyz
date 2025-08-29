@@ -16,14 +16,8 @@ let diffImage = document.querySelector("#aliencat > div.ac-difficulty > img");
 let timeHolder = document.querySelector("#aliencat > div.ac-game > div.data-holder > span.time");
 
 /*
-- death után difficulty beállításra nyomjon vissza
-- be lehessen állítani a difficultyt
-- resetelés nem működik?
 - squish (haptikus effektus)
 - css hogy ne lógjon ki stb
-- idő
-
-kus
 */
 
 let running         = false;
@@ -203,7 +197,7 @@ function startGame() {
 function startTimer() {
     timerHandler = setTimeout(() => {
         if (activeEvent == "LARRY") {
-            console.log()
+            deathScreen("larry");
             return;
         }
 
@@ -215,9 +209,6 @@ function startTimer() {
         catImage.src = "/imgs/aliencat/larry.png";
 
         resetTimer();
-
-        //clearInterval(intervalHandler);
-        //deathScreen(getRandom(0,1) == 0);
     }, remainingTime);
 }
 
@@ -249,18 +240,6 @@ function startInterval() {
         let elapsed = Date.now() - timerStart;
         let timeLeft = Math.max(0, (remainingTime - elapsed) / 1000);
         timeHolder.innerText = timeLeft.toFixed(1) + "s";
-
-        console.log("Data:", JSON.stringify({
-            ACTIVE: running,
-            score: score,
-            cat: catClickval,
-            shark: sharkClickval,
-            catCounter: catCounter,
-            sharkCounter: sharkCounter,
-            activeEvent: activeEvent,
-            eventLength: eventLength,
-            catImage: catImage || "NO SRC?"
-        }, null, 4))
     }, 100);
 }
 
