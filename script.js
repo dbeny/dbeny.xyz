@@ -63,13 +63,13 @@ function getRemainingTime() {
 		setInnerTextForId(list[i], dhms[i])
 	}
 
-	let dhmsv = getTimeUntilLongTime(currentTime, `Apr 12, 2026 12:00:00`);
+	let dhmsv = getTimeUntilLongTime(currentTime, `Apr 12, 2030 12:00:00`);
 	for (let i = 0; i < 4; i++) {
 		setInnerTextForId(`${list[i]}${list[i]}`, dhmsv[i])
 	}
 
 	setInnerTextForId("created-at", getTimeUntilWords(currentTime, "Dec 15, 2023 09:29:00"))
-	setInnerTextForId("edited-at", getTimeUntilWords(currentTime, "June 6, 2025 13:15:00"))
+	setInnerTextForId("edited-at", getTimeUntilWords(currentTime, "Aug 12, 2026 23:40:00"))
 	
 	let symmetric = findNextSymmetricTimestamp()
 	let dhms2 = getTimeUntilLongTime(currentTime, symmetric)
