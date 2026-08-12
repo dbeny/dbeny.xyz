@@ -11,6 +11,21 @@
     --large-br: 1rem;
 }
 
+.preamble {
+    color: red;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.header {
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: black;
+}
+
 #time {
     display: flex;
     flex-direction: row;
