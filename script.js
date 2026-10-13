@@ -217,26 +217,17 @@ function walkAndReplace(root) {
 }
 
 async function getAllGifUrls(dir = "media") {
-	try {
-		const resp = await fetch(`/${dir}/`);
-		const html = await resp.text();
-	
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(html, 'text/html');
-	
-		const links = Array.from(doc.querySelectorAll('a'));
-	
-		return links
-			.map(a => a.getAttribute('href'))
-			.filter(href => /\.(gif|png|jpg|jpeg|webp)$/i.test(href))
-			.map(href => {
-				const filename = href.split('/').pop();
-				return `${window.location.origin}/${dir}/${filename}`;
-			});
-	} catch (ew) {
-		console.error(`Couldn't read directory ${dir}.`);
-		return [];
-	}
+    try {
+        const resp = await fetch(`/${dir}/files.json`);
+        const filenames = await resp.json();
+    
+        return filenames.map(filename => {
+            return `${window.location.origin}/${dir}/${filename}`;
+        });
+    } catch (ew) {
+        console.error(`Couldn't read directory ${dir}.`);
+        return [];
+    }
 }
 
 async function renderGifPopupAndGifs() {
