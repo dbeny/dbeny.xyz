@@ -447,7 +447,11 @@ li {
 	width: 100%;
 	height: max-content;
 	display: flex;
+	position: sticky;
+	top: 0;
+	z-index: 1;
 	justify-content: center;
+	background-color: var(--darker);
 
 	& > h1 {
 		padding: .5rem 5rem;
