@@ -260,7 +260,7 @@ async function renderGifPopupAndGifs() {
 
 		img.addEventListener("click", () => {
             navigator.clipboard.writeText(url);
-			imageCopiedToast("Ellvitted a gifemet a vágólapra :ANGERY:");
+			imageCopiedToast("Elvitted a gifemet a vágólapra :ANGERY:");
         });
 	});
 
