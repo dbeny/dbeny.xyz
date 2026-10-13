@@ -106,7 +106,7 @@ function getRemainingTime() {
 	);
 	setInnerTextForId(
 		"edited-at",
-		getTimeUntilWords(currentTime, "Aug 12, 2026 23:40:00")
+		getTimeUntilWords(currentTime, "Oct 13, 2026 19:45:00")
 	);
 
 	let symmetric = findNextSymmetricTimestamp();
