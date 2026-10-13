@@ -549,8 +549,8 @@ li {
 
 .title-container {
 	display: flex;
-	width: 65%;
-	justify-content: end;
+	width: 50%;
+	justify-content: start;
 	
 	& > h1 {
 		padding: .5rem 5rem;
