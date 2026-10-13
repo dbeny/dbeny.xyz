@@ -31,6 +31,20 @@
     flex-direction: row;
 }
 
+dl > dt > h3 {
+    width: max-content;
+}
+
+.these {
+    display: flex
+}
+
+dl > dd {
+    font-size: .85rem;
+    margin-bottom: .5rem;
+    max-width: 15rem;
+}
+
 html {
     color-scheme: dark;
 }
@@ -138,6 +152,7 @@ h1 {
     padding: .2em .5em;
     outline: 2px solid var(--theme);
     margin: 0;
+	box-shadow: 0px 3px 10px 1px #000000;
 }
 
 .ragebait {
@@ -225,6 +240,7 @@ h4 {
     padding: 1em;
     border-radius: var(--med-br);
     width: max-content;
+	box-shadow: 0px 3px 10px 1px #000000;
 }
 
 .main-container {
@@ -294,6 +310,15 @@ h4 {
         width: 100%;
         height: auto;
     }
+
+	.popup {
+        width: 90dvw !important;
+        height: 90dvh !important;
+    }
+
+    .gif-container {
+        columns: 1 300px;
+    }
 }
 
 .describe > h3 {
@@ -345,14 +370,12 @@ li > img {
     border-radius: var(--med-br);    
 }
 
-/* initial (hidden) state for all list items */
 li {
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   }
   
-  /* when we add .visible, they’ll slide up and fade in */
   li.visible {
     opacity: 1;
     transform: translateY(0);
@@ -368,3 +391,163 @@ li {
 }
 
 
+.popup { /* felpopál tudod */
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 50%;
+	transform: translate(50%);
+	margin: 2rem 0;
+	height: 90dvh;
+	width: 50dvw;
+	z-index: 4;
+	gap: 1rem;
+	background-color: var(--darker);
+	overflow-y: scroll;
+	border-radius: var(--large-br);
+	scroll-behavior: smooth;
+}
+
+.popup::-webkit-scrollbar {
+	display: block;
+	width: .85rem;
+}
+
+.popup::-webkit-scrollbar-track {
+	background-color: #0084ff30;
+	border-radius: 100vh;
+}
+
+.popup::-webkit-scrollbar-button:vertical:decrement {
+    display: block;
+    height: calc(2rem - 6px);
+    background-color: transparent;
+}
+
+.popup::-webkit-scrollbar-button:vertical:increment {
+    display: block;
+    height: calc(2rem - 6px);
+    background-color: transparent;
+}
+
+.popup::-webkit-scrollbar-thumb {
+	background-color: var(--theme);
+	border-radius: 100vw;
+}
+
+.inner-popup {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	border-radius: var(--large-br);
+}
+
+.header-container {
+	padding: .5rem;
+	width: 100%;
+	height: max-content;
+	display: flex;
+	justify-content: center;
+
+	& > h1 {
+		padding: .5rem 5rem;
+		font-size: medium;
+	}
+}
+
+.gif-container {
+	padding: 0 1rem;
+    /* Oszlopos elrendezés flexbox-szal vagy multi-columnnal, ami engedi a változó magasságot */
+    columns: 4 300px; /* 4 oszlopig megy, oszloponként minimum 220px szélességgel */
+    column-gap: 1rem;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.popup img {
+    border-radius: var(--med-br);
+    width: 100%; /* Kitölti az oszlop szélességét */
+    height: auto; /* MEGŐRZI az eredeti képarányt és magasságot! */
+    display: block;
+    margin-bottom: 1rem; /* Hely az elemek között alul */
+    cursor: pointer;
+    transition: transform .2s, filter .2s;
+    break-inside: avoid; /* Biztosítja, hogy egy kép ne törjön ketté oszlopváltáskor */
+}
+
+.popup img:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+}
+
+.button-row {
+	display: flex;
+	width: 100%;
+	height: max-content;
+	position: sticky;
+	justify-content: space-between;
+	align-items: center;
+	bottom: 0;
+	background-color: var(--darker);
+	padding: .5rem;
+	gap: .5rem;
+}
+
+.copy-disclaimer {
+	color: gold;
+	font-style: italic;
+	font-size: .85rem;
+}
+
+.backdrop {
+	width: 100dvw;
+	height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	z-index: 4;
+	backdrop-filter: blur(10px);
+}
+
+.close-popup {
+	padding: .5rem 1rem;
+	background-color: var(--theme);
+	user-select: none;
+	transition: filter .3s;
+	border-radius: var(--med-br);
+	cursor: pointer;
+
+	&:hover {
+		filter: brightness(.5);
+	}
+}
+
+.toast {
+	z-index: 4;
+	position: fixed;
+	top: 0;
+	right: 0;
+	padding: .5rem 1rem;
+	background-color: var(--main-dark);
+	outline: 2px solid var(--theme);
+	margin: 2rem;
+	border-radius: var(--med-br);
+}
+
+.gif-button {
+	padding: .5rem 1rem;
+	width: max-content;
+	background-color: gold;
+	color: #000;
+	border-radius: var(--med-br);
+	box-shadow: 0px 3px 10px 1px #000000;
+	user-select: none;
+	transition: .3s ease;
+	cursor: pointer;
+
+	&:hover {
+		filter: brightness(.5);
+		box-shadow: 0px 0px 10px 1px #000000;
+	}
+}
