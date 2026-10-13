@@ -233,41 +233,63 @@ async function getAllGifUrls(dir = "media") {
 async function renderGifPopupAndGifs() {
 	const gifArray = await getAllGifUrls();
 
-	const createElement = (tag, options = {}) => {
-		const el = document.createElement(tag);
+    const createElement = (tag, options = {}) => {
+        const el = document.createElement(tag);
 
-		if (options.className) el.className = options.className;
-		if (options.content) el.innerText = options.content;
-		if (options.src) el.src = options.src;
-		if (options.width) el.width = options.width;
+        if (options.className) el.className = options.className;
+        if (options.content) el.innerText = options.content;
+        if (options.src) el.src = options.src;
+        if (options.width) el.width = options.width;
+		if (options.alt) el.alt = options.alt;
+		if (options.placeholder) el.placeholder = options.placeholder;
 
-		return el;
-	}
+        return el;
+    }
 
 	const backdrop = createElement("div", { className: "backdrop"});
 	const container = createElement("div", { className: "popup" });
 	const innerContainer = createElement("div", { className: "inner-popup" });
 	const headerContainer = createElement("div", { className: "header-container" });
+	const titleContainer = createElement("div", { className: "title-container" });
 	const gifContainer = createElement("div", { className: "gif-container" });
 	const buttonRow = createElement("div", { className: "button-row" });
 	const copyDisclaimer = createElement("span", { className: "copy-disclaimer", content: "Ha rányomsz a gifre, vágólapra másolja a linkjét." });
+	const searchBar = createElement("input", { className: "search-gif", placeholder: "Keress mozgóképet" })
 
 	const headerTitle = createElement("h1", { className: "header-title", content: "Gif-tárház" });
+	const createdImageElements = [];
 
 	gifArray.forEach(url => {
-		const img = createElement("img", { src: url, width: "400" });
-		gifContainer.append(img);
+        const filenameWithExt = url.split('/').pop();
+        
+        const cleanName = filenameWithExt.substring(0, filenameWithExt.lastIndexOf('.'));
+        
+        const altText = cleanName.replace(/[-_]/g, ' ');
 
-		img.addEventListener("click", () => {
-            navigator.clipboard.writeText(url);
-			imageCopiedToast("Elvitted a gifemet a vágólapra :ANGERY:");
+        const img = createElement("img", { 
+            src: url, 
+            width: "400", 
+            alt: altText 
         });
+        
+        gifContainer.append(img);
+		createdImageElements.push(img);
+
+        img.addEventListener("click", () => {
+            navigator.clipboard.writeText(url);
+            imageCopiedToast(`Elvitted a vágólapra a gifemet :ANGERY:`);
+        });
+    });
+
+	searchBar.addEventListener("input", (e) => {
+		filterGifs(e.target.value, createdImageElements);
 	});
 
 	const closeBtn = createElement("btn", { className: "close-popup", content: "Végezetül"});
 	buttonRow.append(closeBtn, copyDisclaimer);
-	
-	headerContainer.append(headerTitle);
+
+	titleContainer.append(headerTitle);
+	headerContainer.append(titleContainer, searchBar);
 	innerContainer.append(headerContainer, gifContainer, buttonRow);
 	container.append(innerContainer);	
 	backdrop.append(container);
@@ -281,6 +303,28 @@ async function renderGifPopupAndGifs() {
 	backdrop.addEventListener("click", (e) => {
         if (e.target === backdrop) backdrop.remove();
     });
+}
+
+function removeAccentsAndLowercase(str) {
+	return str
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase();
+}
+
+function filterGifs(query, gifElements) {
+	const sanitizedQuery = removeAccentsAndLowercase(query);
+
+	gifElements.forEach(gif => {
+		const altText = gif.getAttribute('alt') || '';
+		const sanitizedAlt = removeAccentsAndLowercase(altText);
+
+		if (sanitizedAlt.includes(sanitizedQuery)) {
+			gif.style.display = "";
+		} else {
+			gif.style.display = "none";
+		}
+	});
 }
 
 const imageCopiedToast = (text) => {

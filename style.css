@@ -390,22 +390,21 @@ li {
 
 }
 
-
 .popup { /* felpopál tudod */
-	display: flex;
-	flex-direction: column;
-	position: absolute;
-	right: 50%;
-	transform: translate(50%);
-	margin: 2rem 0;
-	height: 90dvh;
-	width: 50dvw;
-	z-index: 4;
-	gap: 1rem;
-	background-color: var(--darker);
-	overflow-y: scroll;
-	border-radius: var(--large-br);
-	scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 50%;
+    transform: translate(50%);
+    margin: 2rem 0;
+    height: 90dvh;
+    width: 50dvw;
+    z-index: 4;
+    gap: 1rem;
+    background-color: var(--darker);
+    overflow-y: scroll;
+    border-radius: var(--large-br);
+    scroll-behavior: smooth;
 }
 
 .popup::-webkit-scrollbar {
@@ -436,10 +435,11 @@ li {
 }
 
 .inner-popup {
-	display: flex;
-	flex-direction: column;
-	position: relative;
-	border-radius: var(--large-br);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    border-radius: var(--large-br);
+    min-height: 100%;
 }
 
 .header-container {
@@ -450,38 +450,32 @@ li {
 	position: sticky;
 	top: 0;
 	z-index: 1;
-	justify-content: center;
 	background-color: var(--darker);
 
-	& > h1 {
-		padding: .5rem 5rem;
-		font-size: medium;
-	}
 }
 
 .gif-container {
 	padding: 0 1rem;
-    /* Oszlopos elrendezés flexbox-szal vagy multi-columnnal, ami engedi a változó magasságot */
-    columns: 4 300px; /* 4 oszlopig megy, oszloponként minimum 220px szélességgel */
+    columns: 4 300px;
     column-gap: 1rem;
     width: 100%;
-    height: 100%;
+    height: auto;
     position: relative;
 }
 
 .popup img {
-    border-radius: var(--med-br);
-    width: 100%; /* Kitölti az oszlop szélességét */
-    height: auto; /* MEGŐRZI az eredeti képarányt és magasságot! */
+	border-radius: var(--med-br);
+    width: 100%;
+    height: auto;
     display: block;
-    margin-bottom: 1rem; /* Hely az elemek között alul */
+    margin-bottom: 1rem;
     cursor: pointer;
     transition: transform .2s, filter .2s;
-    break-inside: avoid; /* Biztosítja, hogy egy kép ne törjön ketté oszlopváltáskor */
+    break-inside: avoid;
 }
 
 .popup img:hover {
-    transform: scale(1.02);
+	transform: scale(1.02);
     filter: brightness(1.1);
 }
 
@@ -521,7 +515,7 @@ li {
 	transition: filter .3s;
 	border-radius: var(--med-br);
 	cursor: pointer;
-
+	
 	&:hover {
 		filter: brightness(.5);
 	}
@@ -539,6 +533,31 @@ li {
 	border-radius: var(--med-br);
 }
 
+.search-gif {
+	margin-left: auto;
+	border-radius: var(--med-br);
+	border: 2px solid var(--theme);
+	transition: .3s ease;
+	padding: .25rem;
+}
+
+.search-gif:focus, .search-gif:focus-visible {
+	outline: none;
+	border: 2px solid var(--theme);
+	box-shadow: 0 0 4px 2px var(--theme);
+} 
+
+.title-container {
+	display: flex;
+	width: 65%;
+	justify-content: end;
+	
+	& > h1 {
+		padding: .5rem 5rem;
+		font-size: medium;
+	}
+}
+
 .gif-button {
 	padding: .5rem 1rem;
 	width: max-content;
@@ -549,7 +568,7 @@ li {
 	user-select: none;
 	transition: .3s ease;
 	cursor: pointer;
-
+	
 	&:hover {
 		filter: brightness(.5);
 		box-shadow: 0px 0px 10px 1px #000000;
